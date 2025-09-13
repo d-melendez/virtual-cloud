@@ -2,9 +2,7 @@ FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Use Ubuntu Cloud Archive to get a recent OpenStack Horizon (default: caracal / 2024.1)
-ARG UCA_SERIES=caracal
-
+# Install Horizon from Ubuntu Cloud Archive (caracal / 2024.1)
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         software-properties-common \
@@ -13,20 +11,13 @@ RUN apt-get update \
         apache2 \
         libapache2-mod-wsgi-py3 \
         tzdata \
-    && add-apt-repository -y cloud-archive:${UCA_SERIES} \
+    && add-apt-repository -y cloud-archive:caracal \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
         openstack-dashboard \
     && a2enmod wsgi headers rewrite \
     && a2enconf openstack-dashboard \
     && rm -rf /var/lib/apt/lists/*
-
-# Default environment variables (override at runtime)
-ENV HORIZON_ALLOWED_HOSTS="*" \
-    HORIZON_TIME_ZONE="UTC" \
-    HORIZON_KEYSTONE_URL="" \
-    HORIZON_WEBROOT="/" \
-    HORIZON_DEBUG="false"
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh

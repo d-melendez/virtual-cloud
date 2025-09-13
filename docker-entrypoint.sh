@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Configure Horizon's local_settings.py using env vars
+# Configure Horizon using an overrides file in local_settings.d (no envs)
 LOCAL_SETTINGS="/etc/openstack-dashboard/local_settings.py"
+OVERRIDES_DIR="/etc/openstack-dashboard/local_settings.d"
+OVERRIDES_FILE="${OVERRIDES_DIR}/99-defaults.py"
 
 # Ensure file exists (package provides a default). If missing, create minimal base.
 if [ ! -f "$LOCAL_SETTINGS" ]; then
@@ -16,18 +18,7 @@ OPENSTACK_KEYSTONE_URL = 'http://%s:5000/v3' % OPENSTACK_HOST
 PY
 fi
 
-# Replace simple settings in local_settings.py safely
-replace_or_append() {
-  local key="$1"; shift
-  local value="$1"; shift
-  local pattern="^${key} ="
-  if grep -qE "$pattern" "$LOCAL_SETTINGS"; then
-    sed -i "s#${pattern}.*#${key} = ${value}#" "$LOCAL_SETTINGS"
-  else
-    printf "\n${key} = ${value}\n" >> "$LOCAL_SETTINGS"
-  fi
-}
-
+# Helpers
 bool_py() {
   case "${1:-false}" in
     true|True|1|yes|on) echo True ;;
@@ -35,24 +26,23 @@ bool_py() {
   esac
 }
 
-# Apply env-configurable settings
-TIME_ZONE=${HORIZON_TIME_ZONE:-UTC}
-ALLOWED=${HORIZON_ALLOWED_HOSTS:-*}
-DEBUG_BOOL=$(bool_py "${HORIZON_DEBUG:-false}")
-WEBROOT_VAL=${HORIZON_WEBROOT:-/}
-KEYSTONE_URL=${HORIZON_KEYSTONE_URL:-}
-
-replace_or_append "DEBUG" "$DEBUG_BOOL"
-replace_or_append "ALLOWED_HOSTS" "['${ALLOWED}']"
-replace_or_append "TIME_ZONE" "'${TIME_ZONE}'"
-replace_or_append "WEBROOT" "'${WEBROOT_VAL}'"
-
-if [ -n "$KEYSTONE_URL" ]; then
-  replace_or_append "OPENSTACK_KEYSTONE_URL" "'${KEYSTONE_URL}'"
-fi
+mkdir -p "$OVERRIDES_DIR"
+cat > "$OVERRIDES_FILE" <<'PY'
+# Auto-generated defaults by docker-entrypoint.sh
+DEBUG = False
+ALLOWED_HOSTS = ['*']
+TIME_ZONE = 'UTC'
+WEBROOT = '/'
+# Set your Keystone endpoint here if needed
+# OPENSTACK_KEYSTONE_URL = 'http://keystone:5000/v3'
 
 # Use in-process cache to avoid external memcached dependency in container
-replace_or_append "CACHES" "{ 'BACKEND': 'django.core.cache.backends.locmem.LocMemCache' }"
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+PY
 
 # Ensure Apache runs in foreground
 exec "$@"
