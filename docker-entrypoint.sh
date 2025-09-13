@@ -32,7 +32,7 @@ cat > "$OVERRIDES_FILE" <<'PY'
 DEBUG = False
 ALLOWED_HOSTS = ['*']
 TIME_ZONE = 'UTC'
-WEBROOT = '/'
+WEBROOT = '/horizon/'
 # Set your Keystone endpoint here if needed
 # OPENSTACK_KEYSTONE_URL = 'http://keystone:5000/v3'
 

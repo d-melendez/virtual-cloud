@@ -1,6 +1,6 @@
 ## OpenStack Horizon in Docker (zero-config)
 
-This image installs OpenStack Horizon and runs it under Apache with mod_wsgi. It ships with safe defaults (in-process cache, `ALLOWED_HOSTS=['*']`, `WEBROOT='/'`). No configuration is required.
+This image installs OpenStack Horizon and runs it under Apache with mod_wsgi. It ships with safe defaults (in-process cache, `ALLOWED_HOSTS=['*']`, `WEBROOT='/horizon/'`). No configuration is required.
 
 ### Build
 
@@ -17,7 +17,7 @@ docker run -d \
   horizon:latest
 ```
 
-Open: `http://<droplet-public-ip>/`
+Open: `http://<droplet-public-ip>/horizon`
 
 Notes:
 
