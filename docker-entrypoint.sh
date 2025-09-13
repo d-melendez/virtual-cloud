@@ -6,17 +6,25 @@ LOCAL_SETTINGS="/etc/openstack-dashboard/local_settings.py"
 OVERRIDES_DIR="/etc/openstack-dashboard/local_settings.d"
 OVERRIDES_FILE="${OVERRIDES_DIR}/99-defaults.py"
 
-# Ensure file exists (package provides a default). If missing, create minimal base.
-if [ ! -f "$LOCAL_SETTINGS" ]; then
-  cat >/etc/openstack-dashboard/local_settings.py <<'PY'
+# Always write a minimal, deterministic base config to avoid memcached dependency
+cat > "$LOCAL_SETTINGS" <<'PY'
 from django.utils.translation import gettext_lazy as _
+
 DEBUG = False
 ALLOWED_HOSTS = ['*']
-WEBROOT = '/'
-OPENSTACK_HOST = '127.0.0.1'
-OPENSTACK_KEYSTONE_URL = 'http://%s:5000/v3' % OPENSTACK_HOST
+TIME_ZONE = 'UTC'
+WEBROOT = '/horizon/'
+
+# Set Keystone endpoint if needed
+# OPENSTACK_KEYSTONE_URL = 'http://keystone:5000/v3'
+
+# Use in-process cache to avoid external memcached dependency
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
 PY
-fi
 
 # Helpers
 bool_py() {
