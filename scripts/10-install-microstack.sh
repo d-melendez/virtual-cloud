@@ -3,9 +3,16 @@ set -euo pipefail
 
 echo "==> Installing MicroStack"
 
-sudo apt update -y && sudo apt install snapd -y && sudo snap install microstack --beta && sudo apt clean
+sudo apt update -y \
+    && sudo apt install snapd -y \
+    && sudo apt clean && sudo apt autoremove -y
 if [ $? -ne 0 ]; then
-    return 1
+    exit 1
 fi
 
-return 0
+sudo snap install microstack --beta
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
+exit 0
