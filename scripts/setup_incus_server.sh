@@ -37,9 +37,11 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
-sudo incus admin init
-if [[ $? -ne 0 ]]; then
-    exit 1
+if ! incus info >/dev/null 2>&1; then
+    sudo incus admin init
+    if [[ $? -ne 0 ]]; then
+        exit 1
+    fi
 fi
 
 incus config set core.https_address :8443
@@ -50,10 +52,6 @@ fi
 identity="my-mac"
 project_name="my-project"
 
-incus config trust add $identity
-if [[ $? -ne 0 ]]; then
-    exit 1
-fi
 
 add_new_project $project_name
 if [[ $? -ne 0 ]]; then
