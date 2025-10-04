@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -o pipefail
+set -ou pipefail
 
 function setup_zabbly_upstream() {
     SUITE=noble
@@ -18,16 +18,15 @@ function setup_zabbly_upstream() {
     # Replace any previous broken entry and add the correct one
     sudo rm -f /etc/apt/sources.list.d/zabbly-incus-stable.sources
 
-    cat <<EOF | sudo tee /etc/apt/sources.list.d/zabbly-incus-stable.sources >/dev/null
-    Enabled: yes
-    Types: deb
-    URIs: https://pkgs.zabbly.com/incus/stable
-    Suites: ${SUITE}
-    Components: main
-    Architectures: $(dpkg --print-architecture)
-    Signed-By: /etc/apt/keyrings/zabbly.asc
+cat <<EOF | sudo tee /etc/apt/sources.list.d/zabbly-incus-stable.sources >/dev/null
+Enabled: yes
+Types: deb
+URIs: https://pkgs.zabbly.com/incus/stable
+Suites: ${SUITE}
+Components: main
+Architectures: $(dpkg --print-architecture)
+Signed-By: /etc/apt/keyrings/zabbly.asc
 EOF
-
     if [[ $? -ne 0 ]]; then
         return 1
     fi
@@ -40,7 +39,7 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
-sudo apt update && \
+sudo apt update &&
     sudo apt install -y incus incus-ui-canonical
 if [[ $? -ne 0 ]]; then
     exit 1
