@@ -2,7 +2,46 @@
 
 set -o pipefail
 
-sudo apt update && sudo apt install -y incus
+function setup_zabbly_upstream() {
+    SUITE=noble
+
+    sudo install -d -m 0755 /etc/apt/keyrings
+    if [[ $? -ne 0 ]]; then
+        return 1
+    fi
+
+    curl -fsSL https://pkgs.zabbly.com/key.asc | sudo tee /etc/apt/keyrings/zabbly.asc >/dev/null
+    if [[ $? -ne 0 ]]; then
+        return 1
+    fi
+
+    # Replace any previous broken entry and add the correct one
+    sudo rm -f /etc/apt/sources.list.d/zabbly-incus-stable.sources
+
+    cat <<EOF | sudo tee /etc/apt/sources.list.d/zabbly-incus-stable.sources >/dev/null
+    Enabled: yes
+    Types: deb
+    URIs: https://pkgs.zabbly.com/incus/stable
+    Suites: ${SUITE}
+    Components: main
+    Architectures: $(dpkg --print-architecture)
+    Signed-By: /etc/apt/keyrings/zabbly.asc
+EOF
+
+    if [[ $? -ne 0 ]]; then
+        return 1
+    fi
+
+    return 0
+}
+
+setup_zabbly_upstream
+if [[ $? -ne 0 ]]; then
+    exit 1
+fi
+
+sudo apt update && \
+    sudo apt install -y incus incus-ui-canonical
 if [[ $? -ne 0 ]]; then
     exit 1
 fi

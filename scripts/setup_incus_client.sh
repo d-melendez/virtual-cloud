@@ -10,7 +10,7 @@ if ! incus >/dev/null 2>&1; then
     fi
 fi
 
-remote_address="157.245.239.13:8443"
+remote_address=$1
 remote_name="my-remote-test"
 incus remote add $remote_name $remote_address --accept-certificate
 if [[ $? -ne 0 ]]; then
