@@ -10,6 +10,8 @@ if ! incus >/dev/null 2>&1; then
     fi
 fi
 
+rm -rf ~/.config/incus && rm -rf ~/.config/incus.bak
+
 mv ~/.config/incus ~/.config/incus.bak
 
 
@@ -21,8 +23,18 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
+incus remote switch $remote_name
+if [[ $? -ne 0 ]]; then
+    echo "failed to switch remote"
+    exit 1
+fi
+
 incus launch images:ubuntu/22.04 $remote_name:my-first-container-1
 if [[ $? -ne 0 ]]; then
     echo "failed to launch container"
     exit 1
 fi
+
+
+
+exit 0
