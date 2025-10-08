@@ -76,6 +76,12 @@ cleanup() {
 
 trap cleanup EXIT
 
+incus project switch default
+if [[ $? -ne 0 ]]; then
+    echo "failed to switch to default project"
+    exit 1
+fi
+
 add_new_project $project_name
 if [[ $? -ne 0 ]]; then
     exit 1
