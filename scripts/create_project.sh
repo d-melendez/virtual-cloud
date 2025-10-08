@@ -55,7 +55,7 @@ function add_new_project() {
         return 1
     fi
 
-    incus profile device add default root disk path=/ pool=$storage_name
+    incus profile device add default "root-${project_name}" disk path=/ pool=$storage_name
     if [[ $? -ne 0 ]]; then
         echo "failed to add profile device"
         return 1
@@ -65,7 +65,7 @@ function add_new_project() {
 }
 
 project_name=$1
-identity="$project_name-root"
+identity="${project_name}-root"
 
 cleanup() {
     incus project switch default
