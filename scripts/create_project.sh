@@ -11,11 +11,6 @@ function add_new_project() {
         return 1
     fi
 
-    incus project create $project_name --config restricted=true
-    if [[ $? -ne 0 ]]; then
-        return 1
-    fi
-
     isolate_feature_in_project=true
     incus project create $project_name --config restricted=true \
         --config restricted.backups=allow \
