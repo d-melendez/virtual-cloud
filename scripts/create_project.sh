@@ -34,16 +34,13 @@ function add_new_project() {
         return 1
     fi
 
-    echo "project name: $project_name"
-    echo "incus profile device add default root disk path=/ pool=$storage_name"
-
     incus project set $project_name limits.containers=5
     if [[ $? -ne 0 ]]; then
         echo "failed to set limits"
         return 1
     fi
     
-    incus profile device add default root disk path=/ pool=$storage_name
+    incus profile device add default root-${project_name} disk path=/ pool=$storage_name
     if [[ $? -ne 0 ]]; then
         echo "failed to add profile device"
         return 1
