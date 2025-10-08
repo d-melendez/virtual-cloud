@@ -34,6 +34,8 @@ function add_new_project() {
         return 1
     fi
 
+    echo "project name: $project_name"
+
     incus project set $project_name limits.containers=5
     if [[ $? -ne 0 ]]; then
         echo "failed to set limits"
