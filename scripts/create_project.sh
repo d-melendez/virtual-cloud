@@ -8,6 +8,7 @@ function add_new_project() {
 
     incus storage create $storage_name dir
     if [[ $? -ne 0 ]]; then
+        echo "failed to create storage"
         return 1
     fi
 
@@ -21,21 +22,27 @@ function add_new_project() {
         --config restricted.devices.disk="managed" \
         --config features.storage.buckets=$isolate_feature_in_project \
         --config features.storage.volumes=$isolate_feature_in_project
-        
+    if [[ $? -ne 0 ]]; then
+        echo "failed to create project"
+        return 1
+    fi
 
     # copy the contents of the default project’s default profile into the current project’s default profile
     incus profile show default --project default | incus profile edit default
     if [[ $? -ne 0 ]]; then
+        echo "failed to copy profile"
         return 1
     fi
 
     incus project set $project_name limits.containers=5
     if [[ $? -ne 0 ]]; then
+        echo "failed to set limits"
         return 1
     fi
     
     incus profile device add default root disk path=/ pool=$storage_name
     if [[ $? -ne 0 ]]; then
+        echo "failed to add profile device"
         return 1
     fi
 
@@ -44,11 +51,13 @@ function add_new_project() {
 
     incus project switch $project_name
     if [[ $? -ne 0 ]]; then
+        echo "failed to add profile device"
         return 1
     fi
 
     incus profile device add default root disk path=/ pool=$storage_name
     if [[ $? -ne 0 ]]; then
+        echo "failed to add profile device"
         return 1
     fi
 
@@ -75,6 +84,7 @@ fi
 
 incus config trust add $identity --projects $project_name --restricted
 if [[ $? -ne 0 ]]; then
+    echo "failed to add identity"
     exit 1
 fi
 
