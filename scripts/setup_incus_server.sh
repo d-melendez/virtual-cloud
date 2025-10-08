@@ -71,4 +71,12 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
+
+incus config trust add root
+if [[ $? -ne 0 ]]; then
+    echo "failed to add root identity"
+    exit 1
+fi
+
+
 exit 0
