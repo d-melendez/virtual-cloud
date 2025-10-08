@@ -78,5 +78,23 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
+incus config set oidc.issuer=https://dev-mpsujybme3f2dsf6.us.auth0.com/
+if [[ $? -ne 0 ]]; then
+    echo "failed to set oidc issuer"
+    exit 1
+fi
+
+incus config set oidc.client.id=nGD0VJr5ZlnRAAf92ngQB9oj9k2Nk714
+if [[ $? -ne 0 ]]; then
+    echo "failed to set oidc client id"
+    exit 1
+fi
+
+incus config set oidc.audience=https://dev-mpsujybme3f2dsf6.us.auth0.com/api/v2/
+if [[ $? -ne 0 ]]; then
+    echo "failed to set oidc audience"
+    exit 1
+fi
+
 
 exit 0
