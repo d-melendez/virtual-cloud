@@ -27,6 +27,12 @@ function add_new_project() {
         return 1
     fi
 
+    incus project switch $project_name
+    if [[ $? -ne 0 ]]; then
+        echo "failed to add profile device"
+        return 1
+    fi
+
     # copy the contents of the default project’s default profile into the current project’s default profile
     incus profile show default --project default | incus profile edit default
     if [[ $? -ne 0 ]]; then
@@ -40,20 +46,16 @@ function add_new_project() {
         return 1
     fi
     
-    incus profile device add default root-${project_name} disk path=/ pool=$storage_name
+    incus profile device set default root pool "$storage_name"
     if [[ $? -ne 0 ]]; then
-        echo "failed to add profile device"
+        echo "failed to set device pool"
         return 1
     fi
 
     #incus project set $project_name limits.cpu=2
     #incus project set $project_name limits.memory=2GB
 
-    incus project switch $project_name
-    if [[ $? -ne 0 ]]; then
-        echo "failed to add profile device"
-        return 1
-    fi
+    
 
     incus profile device set default "root-${project_name}" path /
     if [[ $? -ne 0 ]]; then
