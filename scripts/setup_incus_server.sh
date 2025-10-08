@@ -57,4 +57,18 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
+incus storage create default dir
+if [[ $? -ne 0 ]]; then
+    exit 1
+fi
+
+# Make sure the default profile has a root disk that uses that pool
+# (remove any wrong one first, ignore errors if it doesn't exist)
+incus profile device remove default root 2>/dev/null || true
+
+incus profile device add default root disk path=/ pool=default
+if [[ $? -ne 0 ]]; then
+    exit 1
+fi
+
 exit 0
