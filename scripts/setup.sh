@@ -2,13 +2,14 @@
 
 set -u pipefail
 
-# go to the root of the repository
-cd "$(git rev-parse --show-toplevel)"
-
 auth0_domain=$1
 client_id=$2
 client_secret=$3
 incus_ip_address=$4
+
+
+# go to the root of the repository
+cd "$(git rev-parse --show-toplevel)"
 
 . ./scripts/setup_terraform.sh
 if [[ $? -ne 0 ]]; then
