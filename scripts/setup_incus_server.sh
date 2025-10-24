@@ -71,6 +71,10 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
+# https://registry.terraform.io/providers/auth0/auth0/latest/docs/guides/quickstart
+auth0_domain=$1
+client_id=$2
+client_secret=$3
 
 incus config trust add root
 if [[ $? -ne 0 ]]; then
@@ -78,21 +82,47 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
-incus config set oidc.issuer=https://dev-mpsujybme3f2dsf6.us.auth0.com/
+incus config set oidc.issuer=https://${auth0_domain}/
 if [[ $? -ne 0 ]]; then
     echo "failed to set oidc issuer"
     exit 1
 fi
 
-incus config set oidc.client.id=nGD0VJr5ZlnRAAf92ngQB9oj9k2Nk714
+incus config set oidc.client.id=${client_id}
 if [[ $? -ne 0 ]]; then
     echo "failed to set oidc client id"
     exit 1
 fi
 
-incus config set oidc.audience=https://dev-mpsujybme3f2dsf6.us.auth0.com/api/v2/
+incus config set oidc.audience=https://${auth0_domain}/api/v2/
 if [[ $? -ne 0 ]]; then
     echo "failed to set oidc audience"
+    exit 1
+fi
+
+export AUTH0_DOMAIN=${auth0_domain}
+export AUTH0_CLIENT_ID=${client_id}
+export AUTH0_CLIENT_SECRET=${client_secret}
+
+sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
+if [[ $? -ne 0 ]]; then
+    exit 1
+fi
+
+curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+if [[ $? -ne 0 ]]; then
+    exit 1
+fi
+
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
+https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
+sudo tee /etc/apt/sources.list.d/hashicorp.list
+if [[ $? -ne 0 ]]; then
+    exit 1
+fi
+
+sudo apt-get update && sudo apt-get install terraform
+if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
