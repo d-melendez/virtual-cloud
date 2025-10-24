@@ -14,47 +14,7 @@ variable "auth0_client_secret" {
   sensitive   = true
 }
 
-variable "app_name" {
-  description = "Display name for the Incus UI SSO application"
+variable "incus_ip_address" {
+  description = "IP address of the Incus server"
   type        = string
-  default     = "Incus UI SSO"
 }
-
-variable "app_description" {
-  description = "Description for the Incus UI SSO application"
-  type        = string
-  default     = "SSO application for Incus UI"
-}
-
-variable "callback_urls" {
-  description = "Allowed callback URLs for Auth0 (redirect URIs)"
-  type        = list(string)
-}
-
-variable "logout_urls" {
-  description = "Allowed logout redirect URLs"
-  type        = list(string)
-}
-
-variable "web_origins" {
-  description = "Allowed web origins for CORS/PKCE flows"
-  type        = list(string)
-  default     = []
-}
-
-variable "allowed_origins" {
-  description = "Additional allowed origins for cross-origin authentication"
-  type        = list(string)
-  default     = []
-}
-
-variable "grant_types" {
-  description = "OAuth grant types enabled for the application"
-  type        = list(string)
-  default = [
-    "authorization_code",
-    "refresh_token"
-  ]
-}
-
-

@@ -2,10 +2,16 @@
 
 set -ou pipefail
 
-# https://registry.terraform.io/providers/auth0/auth0/latest/docs/guides/quickstart
+cd "$(git rev-parse --show-toplevel)"
+cd terraform/root
+
+json="$(terraform output -json)"
+
+# Example: read three known keys
 auth0_domain=$1
-client_id=$2
-client_secret=$3
+auth0_client_id="$(jq -r '.auth0_application_client_id.value'  <<<"$json")"
+
+# https://registry.terraform.io/providers/auth0/auth0/latest/docs/guides/quickstart
 
 function setup_zabbly_upstream() {
     SUITE=noble
@@ -82,13 +88,15 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
+# https://documentation.ubuntu.com/lxd/latest/howto/oidc_auth0/
+
 incus config set oidc.issuer=https://${auth0_domain}/
 if [[ $? -ne 0 ]]; then
     echo "failed to set oidc issuer"
     exit 1
 fi
 
-incus config set oidc.client.id=${client_id}
+incus config set oidc.client.id=${auth0_client_id}
 if [[ $? -ne 0 ]]; then
     echo "failed to set oidc client id"
     exit 1
@@ -97,32 +105,6 @@ fi
 incus config set oidc.audience=https://${auth0_domain}/api/v2/
 if [[ $? -ne 0 ]]; then
     echo "failed to set oidc audience"
-    exit 1
-fi
-
-export AUTH0_DOMAIN=${auth0_domain}
-export AUTH0_CLIENT_ID=${client_id}
-export AUTH0_CLIENT_SECRET=${client_secret}
-
-sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
-if [[ $? -ne 0 ]]; then
-    exit 1
-fi
-
-curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-if [[ $? -ne 0 ]]; then
-    exit 1
-fi
-
-echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
-https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
-sudo tee /etc/apt/sources.list.d/hashicorp.list
-if [[ $? -ne 0 ]]; then
-    exit 1
-fi
-
-sudo apt-get update && sudo apt-get install terraform
-if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
