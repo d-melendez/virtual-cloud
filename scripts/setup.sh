@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -u pipefail
+
 # go to the root of the repository
 cd "$(git rev-parse --show-toplevel)"
 
