@@ -6,13 +6,13 @@ set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 
 # Load environment from .env (do not echo secrets)
-if [[ ! -f vars.env ]]; then
+if [[ ! -f scripts/vars.env ]]; then
     echo "vars.env file not found at repo root"
     exit 1
 fi
 
 set -a
-. ./vars.env
+. ./scripts/vars.env
 set +a
 
 # Validate required variables
