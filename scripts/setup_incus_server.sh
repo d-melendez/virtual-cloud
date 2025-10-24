@@ -2,6 +2,11 @@
 
 set -ou pipefail
 
+# https://registry.terraform.io/providers/auth0/auth0/latest/docs/guides/quickstart
+auth0_domain=$1
+client_id=$2
+client_secret=$3
+
 function setup_zabbly_upstream() {
     SUITE=noble
 
@@ -70,11 +75,6 @@ incus profile device add default root disk path=/ pool=default
 if [[ $? -ne 0 ]]; then
     exit 1
 fi
-
-# https://registry.terraform.io/providers/auth0/auth0/latest/docs/guides/quickstart
-auth0_domain=$1
-client_id=$2
-client_secret=$3
 
 incus config trust add root
 if [[ $? -ne 0 ]]; then
