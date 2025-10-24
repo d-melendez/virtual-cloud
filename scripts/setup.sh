@@ -2,14 +2,30 @@
 
 set -euo pipefail
 
-auth0_domain=$1
-client_id=$2
-client_secret=$3
-incus_ip_address="${4}:8443"
-
-
 # go to the root of the repository
 cd "$(git rev-parse --show-toplevel)"
+
+# Load environment from .env (do not echo secrets)
+if [[ ! -f vars.env ]]; then
+    echo "vars.env file not found at repo root"
+    exit 1
+fi
+
+set -a
+. ./vars.env
+set +a
+
+# Validate required variables
+if [[ -z "${AUTH0_DOMAIN:-}" || -z "${AUTH0_CLIENT_ID:-}" || -z "${AUTH0_CLIENT_SECRET:-}" || -z "${INCUS_IP:-}" ]]; then
+    echo "missing one or more required variables in .env: AUTH0_DOMAIN, AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, INCUS_IP"
+    exit 1
+fi
+
+# Map to local variables and normalize values
+auth0_domain="${AUTH0_DOMAIN}"
+auth0_client_id="${AUTH0_CLIENT_ID}"
+auth0_client_secret="${AUTH0_CLIENT_SECRET}"
+incus_ip_address="${INCUS_IP}:8443"
 
 bash scripts/setup_terraform.sh
 if [[ $? -ne 0 ]]; then
@@ -17,7 +33,7 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
-bash scripts/apply_bootstrap_terraform.sh "$auth0_domain" "$client_id" "$client_secret" "$incus_ip_address"
+bash scripts/apply_bootstrap_terraform.sh "$auth0_domain" "$auth0_client_id" "$auth0_client_secret" "$incus_ip_address"
 if [[ $? -ne 0 ]]; then
     echo "failed to apply bootstrap terraform"
     exit 1
