@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ou pipefail
+set -euo pipefail
 
 auth0_domain=$1
 auth0_client_id=$2
