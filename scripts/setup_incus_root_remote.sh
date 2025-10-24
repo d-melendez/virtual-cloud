@@ -12,7 +12,7 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
-incus remote add $remote_name "${remote_address}:8443"
+incus remote add $remote_name "${remote_address}"
 if [[ $? -ne 0 ]]; then
     echo "failed to add root remote"
     exit 1

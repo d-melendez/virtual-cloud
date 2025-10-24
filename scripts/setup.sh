@@ -5,7 +5,7 @@ set -euo pipefail
 auth0_domain=$1
 client_id=$2
 client_secret=$3
-incus_ip_address=$4
+incus_ip_address="${4}:8443"
 
 
 # go to the root of the repository
