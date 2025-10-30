@@ -51,7 +51,7 @@ if [[ $? -ne 0 ]]; then
 fi
 
 sudo apt update &&
-    sudo apt install -y incus incus-ui-canonical
+    sudo apt install -y incus incus-ui-canonical npm nodejs
 if [[ $? -ne 0 ]]; then
     exit 1
 fi
@@ -107,6 +107,19 @@ if [[ $? -ne 0 ]]; then
     echo "failed to set oidc audience"
     exit 1
 fi
+
+npm install --global yarn
+if [[ $? -ne 0 ]]; then
+    echo "failed to install yarn"
+    exit 1
+fi
+
+yarn install && yarn build
+if [[ $? -ne 0 ]]; then
+    echo "failed to install dependencies"
+    exit 1
+
+sudo rsync -a --delete build/ui/ /opt/incus/ui/
 
 
 exit 0

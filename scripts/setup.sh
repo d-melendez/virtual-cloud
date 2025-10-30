@@ -45,4 +45,10 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
+bash scripts/setup_incus_ui.sh
+if [[ $? -ne 0 ]]; then
+    echo "failed to setup incus ui"
+    exit 1
+fi
+
 exit 0
