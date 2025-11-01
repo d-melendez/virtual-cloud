@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ou pipefail
+set -uo pipefail
 
 cd ~
 
@@ -22,11 +22,6 @@ if [[ $? -ne 0 ]]; then
     echo "failed to install yarn"
     exit 1
 fi
-
-yarn install && yarn build
-if [[ $? -ne 0 ]]; then
-    echo "failed to install dependencies"
-    exit 1
 
 yarn install && yarn build
 if [[ $? -ne 0 ]]; then
