@@ -2,7 +2,7 @@
 
 set -ou pipefail
 
-cd / && cd /root
+cd ~
 
 if [[ -d virtual-cloud-ui ]]; then
     rm -rf virtual-cloud-ui
