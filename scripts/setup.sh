@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euo pipefail
+set -uo pipefail
 
 # go to the root of the repository
 cd "$(git rev-parse --show-toplevel)"
