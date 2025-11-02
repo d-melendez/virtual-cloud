@@ -10,7 +10,7 @@ provider "incus" {
 
   remote {
     name    = "incus-server-root"
-    address = "https://138.68.45.47:8443"
+    address = var.incus_endpoint
     token   = var.incus_token
   }
 }

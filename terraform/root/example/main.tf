@@ -4,8 +4,20 @@ resource "incus_project" "project" {
   remote      = "incus-server-root"
 }
 
+resource "incus_network" "bridge" {
+  name    = "br0"
+  project = incus_project.project.name
+  remote  = "incus-server-root"
+
+  config = {
+    "ipv4.nat" = "true"
+  }
+
+  depends_on = [incus_project.project]
+}
+
 resource "incus_profile" "profile" {
-  name    = "default"
+  name    = "custom-project-profile"
   project = incus_project.project.name
   remote  = "incus-server-root"
 
@@ -22,11 +34,11 @@ resource "incus_profile" "profile" {
 }
 
 resource "incus_instance" "instance" {
-  name    = var.instance_name
-  image   = var.instance_image
-  type    = var.instance_type
-  project = incus_project.project.name
-  remote  = "incus-server-root"
+  name     = var.instance_name
+  image    = var.instance_image
+  type     = var.instance_type
+  project  = incus_project.project.name
+  remote   = "incus-server-root"
   profiles = [incus_profile.profile.name]
 
   config = {
@@ -34,6 +46,14 @@ resource "incus_instance" "instance" {
     "limits.memory" = "2GB"
   }
 
-  depends_on = [incus_project.project, incus_profile.profile]
+  device {
+    name = "eth0"
+    type = "nic"
+    properties = {
+      network = incus_network.bridge.name
+    }
+  }
+
+  depends_on = [incus_project.project, incus_profile.profile, incus_network.bridge]
 }
 
