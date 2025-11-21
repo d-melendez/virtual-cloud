@@ -3,5 +3,3 @@ terraform {
     path = "./terraform.tfstate"
   }
 }
-
-

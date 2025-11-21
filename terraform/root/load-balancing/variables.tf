@@ -46,3 +46,8 @@ variable "listen_address" {
   default     = "10.10.10.200"
 }
 
+variable "bridge_ipv4_cidr" {
+  description = "IPv4 address and subnet for the Incus bridge network"
+  type        = string
+  default     = null
+}

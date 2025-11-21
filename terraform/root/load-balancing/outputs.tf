@@ -5,7 +5,7 @@ output "project_name" {
 
 output "load_balancer_listen_address" {
   description = "Listen address of the load balancer"
-  value       = incus_network_lb.load_balancer.listen_address
+  value       = "Incus host IP (see var.incus_endpoint)"
 }
 
 output "load_balancer_port" {
@@ -24,5 +24,5 @@ output "web_instance_ips" {
 
 output "access_url" {
   description = "URL to access the load balancer"
-  value       = "http://${incus_network_lb.load_balancer.listen_address}:${var.http_port}"
+  value       = "http://<incus-host>:${var.http_port}"
 }
