@@ -23,7 +23,7 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
-yarn install && yarn build
+yarn install --ignore-engines && yarn build
 if [[ $? -ne 0 ]]; then
     echo "failed to build virtual-cloud-ui"
     exit 1
