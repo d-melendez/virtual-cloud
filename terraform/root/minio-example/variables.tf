@@ -19,7 +19,7 @@ variable "project_name" {
 variable "instance_image" {
   description = "Image to use for the instance (e.g., images:ubuntu/22.04)"
   type        = string
-  default     = "images:ubuntu/22.04"
+  default     = "images:ubuntu/22.04/cloud"
 }
 
 variable "instance_type" {
